@@ -1,0 +1,218 @@
+openapi: "3.0.0"
+
+info:
+  title: Packing Organizer API
+  version: "1.0"
+
+paths:
+  /boxes:
+    get:
+      summary: List all boxes/ search for a box
+      operationId: list
+      x-openapi-router-controller: Controllers.boxes
+      responses:
+        200:
+          description: List of Boxes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Box'
+      parameters:
+        - name: pageSize
+          description: The Size of the paged results
+          in: query
+          schema:
+            type: integer
+          required: false
+        - name: pageNumber
+          description: The page number of the results
+          in: query
+          schema:
+            type: integer
+          required: false
+        - name: filter
+          description: The filter to search labels by
+          in: query
+          schema:
+            type: string
+          required: false
+    post:
+      summary: Add a new box
+      operationId: add
+      x-openapi-router-controller: Controllers.boxes
+      responses:
+        200:
+          description: Box just created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Box'
+      requestBody:
+        description: Box to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Box'
+  /boxes/{id}:
+    put:
+      summary: Updates an existing box
+      operationId: update
+      x-openapi-router-controller: Controllers.boxes
+      responses:
+        200:
+          description: Box just updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Box'
+      parameters:
+        - name: id
+          description: The Id of the box to update
+          in: path
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        description: Box To Update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Box'
+              
+    delete:
+      operationId: delete
+      summary: Delete a box
+      x-openapi-router-controller: Controllers.boxes
+      responses:
+        204:
+          description: Box has been deleted
+      parameters:
+        - name: id
+          description: The Id of the box to delete
+          in: path
+          schema:
+            type: integer
+          required: true
+          
+  /boxes/{id}/items:
+    get:
+      summary: List all boxes/ search for a box
+      operationId: listItems
+      x-openapi-router-controller: Controllers.boxes
+      responses:
+        200:
+          description: List of Items
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+      parameters:
+        - name: id
+          description: The Id of the box this item belongs to
+          in: path
+          schema:
+            type: integer
+          required: true
+        - name: pageSize
+          description: The Size of the paged results
+          in: query
+          schema:
+            type: integer
+          required: false
+        - name: pageNumber
+          description: The page number of the results
+          in: query
+          schema:
+            type: integer
+          required: false
+        - name: filter
+          description: The filter to search labels by
+          in: query
+          schema:
+            type: string
+          required: false
+    post:
+      summary: Add a new Item
+      operationId: addItem
+      x-openapi-router-controller: Controllers.boxes
+      responses:
+        200:
+          description: Item just created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+      parameters:
+        - name: id
+          description: The Id of the box this item belongs to
+          in: path
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        description: Item to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+  /items/{id}:
+    delete:
+      operationId: itemDelete
+      summary: Delete an item
+      x-openapi-router-controller: Controllers.items
+      responses:
+        204:
+          description: Item has been deleted
+      parameters:
+        - name: id
+          description: The Id of the item to delete
+          in: path
+          schema:
+            type: integer
+          required: true
+
+components:
+  schemas:
+    Box:
+      type: object
+      required:
+        - id
+        - label
+        - description
+      properties:
+        id:
+          type: integer
+          description: Unique identifier
+          example: 123
+          readOnly: true
+        label:
+          type: string
+          description: Box Label
+          example: Box 1
+        description:
+          type: string
+          description: Short Description of Box
+          example: Kitchen Stuffs
+    Item:
+      type: object
+      required:
+        - id
+        - boxId
+        - name
+      properties:
+        id:
+          type: integer
+          description: Unique identifier
+          example: 123
+          readOnly: true
+        boxId:
+          type: integer
+          description: Box Id
+          example: 123
+        name:
+          type: string
+          description: Description of Item
+          example: Forks
