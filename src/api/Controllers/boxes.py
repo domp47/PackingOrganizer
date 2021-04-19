@@ -16,10 +16,12 @@ dbString = config['DATABASE']['ConnectionString']
 
 def list(pageSize: int = None, pageNumber: int = None, filter: str = None) -> str:
     queryCmd = "SELECT [Id],[Label],[Description] FROM [dbo].[Box]"
+    countCmd = "SELECT COUNT(*) FROM [dbo].[Box]"
     paramters = []
 
     if filter is not None:
         queryCmd += " WHERE LOWER(Label) LIKE LOWER(?)"
+        countCmd += " WHERE LOWER(Label) LIKE LOWER(?)"
         paramters.append(f"%{filter}%")
 
     if type(pageSize) is int and type(pageNumber) is int and pageSize is not None and pageNumber is not None:
@@ -29,18 +31,26 @@ def list(pageSize: int = None, pageNumber: int = None, filter: str = None) -> st
                 status=400,
             )
 
-        if type(pageNumber) is not int or pageNumber < 1:
+        if type(pageNumber) is not int or pageNumber < 0:
             return Response(
-                "pageNumber must be greather than 0",
+                "pageNumber must be greather than or equal to 0",
                 status=400,
             )
         queryCmd += " ORDER BY Id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY"
-        paramters.append((pageNumber-1)*pageSize)
+        paramters.append((pageNumber)*pageSize)
         paramters.append(pageSize)
     
     results = []
+    count = 0
     with pyodbc.connect(dbString) as conn:
         with conn.cursor() as cursor:
+            if filter is not None:
+                cursor.execute(countCmd, f"%{filter}%")
+                count = cursor.fetchval()
+            else:
+                cursor.execute(countCmd)
+                count = cursor.fetchval()
+
             if len(paramters) > 0:
                 cursor.execute(queryCmd, tuple(paramters))
             else:
@@ -55,7 +65,7 @@ def list(pageSize: int = None, pageNumber: int = None, filter: str = None) -> st
 
                 results.append(box)
                 row = cursor.fetchone()
-    return results
+    return {'count': count, 'result': results}
 
 def add(body: Box) -> str:
     
@@ -175,9 +185,11 @@ def delete(id: int) -> Response:
 
 def listItems(id:int, pageSize: int = None, pageNumber: int = None, filter: str = None) -> str:
     queryCmd = "SELECT [Id],[BoxId],[Name] FROM [dbo].[Item] WHERE [BoxId] = ?"
+    countCmd = "SELECT COUNT(*) FROM [dbo].[Item] WHERE [BoxId] = ?"
     paramters = [id]
 
     if filter is not None:
+        queryCmd += " AND LOWER(Name) LIKE LOWER(?)"
         queryCmd += " AND LOWER(Name) LIKE LOWER(?)"
         paramters.append(f"%{filter}%")
 
@@ -188,18 +200,25 @@ def listItems(id:int, pageSize: int = None, pageNumber: int = None, filter: str 
                 status=400,
             )
 
-        if type(pageNumber) is not int or pageNumber < 1:
+        if type(pageNumber) is not int or pageNumber < 0:
             return Response(
-                "pageNumber must be greather than 0",
+                "pageNumber must be greather than or equal to 0",
                 status=400,
             )
         queryCmd += " ORDER BY Id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY"
-        paramters.append((pageNumber-1)*pageSize)
+        paramters.append((pageNumber)*pageSize)
         paramters.append(pageSize)
     
     results = []
     with pyodbc.connect(dbString) as conn:
         with conn.cursor() as cursor:
+            if filter is not None:
+                cursor.execute(countCmd, id, f"%{filter}%")
+                count = cursor.fetchval()
+            else:
+                cursor.execute(countCmd, id)
+                count = cursor.fetchval()
+
             cursor.execute(queryCmd, tuple(paramters))
 
             row = cursor.fetchone()
@@ -211,7 +230,7 @@ def listItems(id:int, pageSize: int = None, pageNumber: int = None, filter: str 
 
                 results.append(item)
                 row = cursor.fetchone()
-    return results
+    return {'count': count, 'result': results}
 
 def addItem(id: int, body: Item) -> str:
     body = Item(body)

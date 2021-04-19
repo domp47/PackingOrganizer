@@ -1,6 +1,7 @@
 import os
 import connexion
 import configparser
+from flask_cors import CORS
 
 from encoder import Encoder
 
@@ -17,6 +18,8 @@ if dbString is None:
 
 # Create the application instance
 app = connexion.App(__name__, specification_dir='./')
+
+CORS(app.app, origins="*")
 
 app.app.json_encoder = Encoder
 
