@@ -109,6 +109,37 @@ def add(body: Box) -> str:
         
     return result
 
+def get(id: int) -> str:
+    exists = "Select Case When Exists (SELECT [Id] FROM [dbo].[Box] WHERE [Id] = ?) Then 1 Else 0 End;"
+    sql    = "SELECT [Id],[Label],[Description] FROM [dbo].[Box] WHERE [Id] = ?"
+
+    result = None
+    with pyodbc.connect(dbString) as conn:
+        with conn.cursor() as cursor:
+            
+            cursor.execute(exists, id)
+            if cursor.fetchval() != 1:
+                return Response(
+                    "Not Found",
+                    status=404,
+                )
+
+            cursor.execute(sql, id)
+
+            row = cursor.fetchone()
+            cursor.commit()
+            if row:
+                box = Box()
+                box.id = row[0]
+                box.label = row[1]
+                box.description = row[2]
+
+                result = box
+        
+    return result
+
+            
+
 def update(id: int, body: Box) -> str:
     body = Box(body)
 
@@ -190,7 +221,7 @@ def listItems(id:int, pageSize: int = None, pageNumber: int = None, filter: str 
 
     if filter is not None:
         queryCmd += " AND LOWER(Name) LIKE LOWER(?)"
-        queryCmd += " AND LOWER(Name) LIKE LOWER(?)"
+        countCmd += " AND LOWER(Name) LIKE LOWER(?)"
         paramters.append(f"%{filter}%")
 
     if type(pageSize) is int and type(pageNumber) is int and pageSize is not None and pageNumber is not None:

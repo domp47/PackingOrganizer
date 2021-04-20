@@ -1,20 +1,25 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { BoxDisplayComponent } from './Components/box-display/box-display.component';
+import { BoxViewComponent } from './Components/box-view/box-view.component';
+import { BoxesComponent } from './Components/boxes/boxes.component';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'box',
+    redirectTo: 'boxes',
     pathMatch: 'full'
   },
   {
-    path: 'box',
-    component: BoxDisplayComponent
+    path: 'boxes',
+    component: BoxesComponent
+  },
+  {
+    path: 'box/:id/view',
+    component: BoxViewComponent
   },
   {
     path: '**',
-    redirectTo: '/box'
+    redirectTo: '/boxes'
   }
 ];
 

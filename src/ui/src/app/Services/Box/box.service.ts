@@ -36,6 +36,13 @@ export class BoxService extends BaseService {
     );
   }
 
+  get(id: number): Observable<any> {
+    return this.http.get(`${this.url}/${id}`).pipe(
+      map(data => data),
+      catchError(err => this.handleError("Error Getting Box", err))
+    );
+  }
+
   update(id: number, obj: any): Observable<any> {
     return this.http.put(`${this.url}/${id}`, obj).pipe(
       map(data => data),

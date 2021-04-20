@@ -30,20 +30,27 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatExpansionModule } from '@angular/material/expansion';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 
-import { BoxDisplayComponent } from './Components/box-display/box-display.component';
+import { BoxesComponent } from './Components/boxes/boxes.component';
 import { HttpClientModule } from '@angular/common/http';
+import { BoxViewComponent } from './Components/box-view/box-view.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ConfirmationDialogComponent } from './Components/confirmation-dialog/confirmation-dialog.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    BoxDisplayComponent
+    BoxesComponent,
+    BoxViewComponent,
+    ConfirmationDialogComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule,
 
     // Angular Material Components
     MatToolbarModule,

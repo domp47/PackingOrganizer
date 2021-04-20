@@ -6,15 +6,15 @@ import { BoxDataSource } from 'src/app/DataSources/box.data-source';
 import { BoxService } from 'src/app/Services/Box/box.service';
 
 @Component({
-  selector: 'app-box-display',
-  templateUrl: './box-display.component.html',
-  styleUrls: ['./box-display.component.scss']
+  selector: 'app-boxes',
+  templateUrl: './boxes.component.html',
+  styleUrls: ['./boxes.component.scss']
 })
-export class BoxDisplayComponent implements OnInit {
+export class BoxesComponent implements OnInit {
 
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
 
-  displayedColumns: string[] = ['label', 'description', 'actions'];
+  displayedColumns: string[] = ['label', 'description', 'qr', 'actions'];
   dataSource!: BoxDataSource;
 
   lastRowClicked: number = 0;

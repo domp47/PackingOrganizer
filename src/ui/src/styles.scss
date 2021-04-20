@@ -227,6 +227,14 @@ $altTheme: mat-light-theme($theme-primary, $theme-accent, $theme-warn);
       background-color: #ccc;
     }
   }
+
+  .add-item-button {
+    color:map-get($map: $theme-primary, $key: 'darker');
+  }
+
+  .mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
+    color: $dark-primary-text;
+  }
 }
 
 // Specific component overrides, pieces that are not in line with the general theming
@@ -263,4 +271,82 @@ $altTheme: mat-light-theme($theme-primary, $theme-accent, $theme-warn);
     background-size: 100%;
     transition: background 0s;
   }
+}
+
+.mr-sm {
+  margin-right: 0.5rem;
+}
+
+.mt-sm {
+  margin-top: 0.5rem;
+}
+
+.mb-2 {
+  margin-bottom: 2rem;
+}
+
+.mt-2 {
+  margin-top: 2rem;
+}
+
+.add-item-button {
+  background-color: transparent !important;
+  border: none;
+  padding: .3rem !important;
+  color: map-get($map: $theme-primary, $key: 'lighter');
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 16px;
+  &:hover, &:focus, &:active {
+    font-weight: 750;
+  }
+}
+
+.mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
+  color: $light-primary-text;
+}
+
+.mat-button.mat-primary, .mat-icon-button.mat-primary, .mat-stroked-button.mat-primary {
+  color: map-get($map: $theme-primary, $key: 'lighter');
+}
+
+.mat-cell {
+  text-align: center;
+}
+
+th.mat-header-cell {
+  text-align: center !important;
+}
+
+.details-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+@media only screen and (max-width: 1500px) {
+  .item-detail {
+      margin-right: 4rem;
+  }
+}
+
+@media only screen and (min-width: 1501px) {
+  .item-detail {
+      margin-right: auto;
+  }
+}
+
+.view-subtitle {
+  font-weight: bold;
+  display: block;
+}
+
+.edit-action-buttons {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.full-width {
+  width: 100%;
 }

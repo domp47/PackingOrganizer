@@ -55,6 +55,25 @@ paths:
             schema:
               $ref: '#/components/schemas/Box'
   /boxes/{id}:
+    get:
+      summary: gets an existing box
+      operationId: get
+      x-openapi-router-controller: Controllers.boxes
+      responses:
+        200:
+          description: Box just updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Box'
+      parameters:
+        - name: id
+          description: The Id of the box to get
+          in: path
+          schema:
+            type: integer
+          required: true
+
     put:
       summary: Updates an existing box
       operationId: update

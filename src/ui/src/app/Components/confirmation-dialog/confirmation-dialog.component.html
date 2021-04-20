@@ -1,0 +1,13 @@
+<div mat-dialog-content cdkTrapFocus> 
+    <div class="flex-container mb-2">
+        <mat-icon class="mr-sm" aria-hidden="true">warning_amber</mat-icon>
+        <h4>{{message}}</h4>
+    </div>
+</div>
+<div mat-dialog-actions>
+    <mat-divider></mat-divider>
+    <div class="flex-container mt-2">
+        <button mat-raised-button class="mat-grey-button no-button" (click)="onNoClick()" cdkFocusInitial>No</button>
+        <button mat-raised-button color="primary" (click)="onYesClick()">Yes</button>
+    </div>
+</div>
