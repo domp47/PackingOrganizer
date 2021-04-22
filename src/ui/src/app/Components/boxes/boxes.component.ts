@@ -39,7 +39,7 @@ export class BoxesComponent implements OnInit {
 
   rowClicked(row: any){
     if(this.lastRowClicked === row.id && Date.now()-this.lastRowTime <= 500){
-      // this.router.navigateByUrl("/buildings/"+this.id+"/floors/view/"+row.id);
+      this.router.navigateByUrl("/box/"+row.id+"/view");
     }else{
       this.lastRowClicked = row.id;
       this.lastRowTime = Date.now();

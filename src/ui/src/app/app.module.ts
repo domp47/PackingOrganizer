@@ -35,6 +35,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { BoxViewComponent } from './Components/box-view/box-view.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConfirmationDialogComponent } from './Components/confirmation-dialog/confirmation-dialog.component';
+import { BoxEditComponent } from './Components/box-edit/box-edit.component';
+import { ItemEditComponent } from './Components/item-edit/item-edit.component';
 
 
 @NgModule({
@@ -42,7 +44,9 @@ import { ConfirmationDialogComponent } from './Components/confirmation-dialog/co
     AppComponent,
     BoxesComponent,
     BoxViewComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    BoxEditComponent,
+    ItemEditComponent
   ],
   imports: [
     BrowserModule,

@@ -12,7 +12,8 @@ export class BaseService {
     }
 
     handleError(title: string, err: Response | any): Observable<any> {
-        this.snackBar.open(`${title}: ${err?.error}`, undefined, { duration: 5000 });
+        var errorMsg = err?.error?.detail;
+        this.snackBar.open(`${title}: ${errorMsg}`, undefined, { duration: 5000 });
         return of();
     }
 }

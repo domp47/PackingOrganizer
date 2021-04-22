@@ -17,7 +17,7 @@
 
     <mat-divider [inset]="true"></mat-divider>
     <div class="edit-action-buttons mb-2">
-        <a class="add-item-button" [routerLink]="'/boxes/' + id + '/edit/'">Edit</a>
+        <a class="add-item-button" [routerLink]="'/box/' + id + '/edit/'">Edit</a>
     </div>
 
     <h1>Items</h1>
@@ -48,6 +48,12 @@
     </table>
     <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" [length]="dataSource.dataCount" showFirstLastButtons></mat-paginator>
     <div class="mt-sm mb-2">
-        <a class="add-item-button" [routerLink]="'/'">+ Add New Item</a>
+        <a class="add-item-button" [routerLink]="'/box/'+box?.id+'/item/0/edit'">+ Add New Item</a>
     </div>
+    <mat-divider [inset]="true"></mat-divider>
+            <div class="mt-2">
+                <a routerLink="/boxes">
+                    <button mat-raised-button color="accent">Back</button>
+                </a>
+            </div>
 </mat-card>

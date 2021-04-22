@@ -1,0 +1,17 @@
+<mat-card>
+    <h1>{{ isNew() ? 'Add New' : 'Edit' }} Item</h1>
+
+    <mat-divider [inset]="true"></mat-divider>
+
+    <div class="mt-2 input-container">
+        <mat-form-field class="mr-2 input-size">
+            <mat-label>Name</mat-label>
+            <input matInput [(ngModel)]="name">
+        </mat-form-field>
+    </div>
+
+    <div class="mt-2 edit-action-buttons">
+        <button id="save" class="ml-2" mat-raised-button (click)="save()" color="primary">Save</button>
+        <button id="cancel" mat-raised-button (click)="cancel()" color="accent">Cancel</button>
+    </div>
+</mat-card>

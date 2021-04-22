@@ -277,6 +277,10 @@ $altTheme: mat-light-theme($theme-primary, $theme-accent, $theme-warn);
   margin-right: 0.5rem;
 }
 
+.mr-2 {
+  margin-right: 2rem;
+}
+
 .mt-sm {
   margin-top: 0.5rem;
 }
@@ -349,4 +353,28 @@ th.mat-header-cell {
 
 .full-width {
   width: 100%;
+}
+
+.input-container {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+@media only screen and (max-width: 1000px) {
+  .input-size{
+      min-width: 250px;
+  }
+}
+
+@media only screen and (min-width: 1001px) {
+  .input-size{
+      min-width: 350px;
+  }
+}
+
+.edit-action-buttons {
+  display: flex;
+  flex-direction: row-reverse;
 }

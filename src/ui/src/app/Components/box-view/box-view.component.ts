@@ -24,7 +24,7 @@ export class BoxViewComponent extends BaseViewComponent implements OnInit {
   
   itemSearchControl: FormControl = new FormControl();
   itemFilter: string | null = null;
-  box:any;
+  box: any;
 
   constructor(activatedRoute: ActivatedRoute, private boxService: BoxService, private dialog: MatDialog, private itemService: ItemService) { 
     super(activatedRoute);
