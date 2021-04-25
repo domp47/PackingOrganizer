@@ -79,4 +79,8 @@ export class BoxService extends BaseService {
       catchError(err => this.handleError("Error Adding Item", err))
     );
   }
+
+  getLabel(id: number): void {
+    window.open(`${this.url}/${id}/label`, "_blank");
+  }
 }

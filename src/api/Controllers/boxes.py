@@ -2,17 +2,28 @@ import pyodbc
 import json
 import os
 import configparser
+import qrcode
+import os
+import io
+import textwrap
 
+from PIL import Image, ImageDraw, ImageFont
 from flask import Response
 from Models.box import Box
 from Models.item import Item
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 configFilename = os.path.join(dir_path, "..", "config.ini")
+fontFile = os.path.join(dir_path, "..", "Roboto.ttf")
+
+font = ImageFont.truetype(fontFile, 50)
+
 
 config = configparser.RawConfigParser()
 config.read(configFilename)
 dbString = config['DATABASE']['ConnectionString']
+
+boxViewUrl = config['APP_SETTINGS']['ViewBoxUrl']
 
 def list(pageSize: int = None, pageNumber: int = None, filter: str = None) -> str:
     queryCmd = "SELECT [Id],[Label],[Description] FROM [dbo].[Box]"
@@ -190,6 +201,26 @@ def update(id: int, body: Box) -> str:
         
     return result
 
+def getLabel(id: int) -> str:
+    exists = "Select Case When Exists (SELECT [Id] FROM [dbo].[Box] WHERE [Id] = ?) Then 1 Else 0 End;"
+    sql = "SELECT Label FROM [dbo].[Box] WHERE [Id] = ?"
+
+    label = ""
+    with pyodbc.connect(dbString) as conn:
+        with conn.cursor() as cursor:
+            
+            cursor.execute(exists, id)
+            if cursor.fetchval() != 1:
+                return Response(
+                    "Not Found",
+                    status=404,
+                )
+
+            cursor.execute(sql, id)
+            label = cursor.fetchval()
+        
+    return getLabelImage(label, boxViewUrl.replace("{id}", f"{id}"))
+
 def delete(id: int) -> Response:
     exists = "Select Case When Exists (SELECT [Id] FROM [dbo].[Box] WHERE [Id] = ?) Then 1 Else 0 End;"
 
@@ -310,3 +341,44 @@ def addItem(id: int, body: Item) -> str:
 
 def isNullOrWhiteSpace(s: str) -> bool:
     return s is None or s == "" or s.isspace()
+
+def getLabelImage(text: str, url: str) -> bytes:
+    #Creating an instance of qrcode
+    qr = qrcode.QRCode(
+            version=5,
+            box_size=15,
+            border=5)
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image(fill='black', back_color='white')
+
+    # Put the QR Code on an blank 800x1000 Image
+    imgWidth, imgHeight = img.size
+    background = Image.new('RGBA', (800, 1000), (255, 255, 255, 255))
+    bgWidth, bgHeight = background.size
+    offset = ((bgWidth - imgWidth) // 2, (bgHeight - imgHeight))
+    background.paste(img, offset)
+
+    drawableImg = ImageDraw.Draw(background)
+
+    # Wrap the text if it's too long
+    padding = 40
+    textLen, _ = drawableImg.textsize(text, font=font)
+    avgPixelsPerChar = textLen / len(text)
+    text = "\n".join(textwrap.wrap(text, width=(imgWidth-padding)/avgPixelsPerChar))
+
+    textSize = drawableImg.multiline_textsize(text, font=font)
+
+    textY = padding // 2
+    if textSize[1] < offset[1]:
+        textY = (offset[1] - textSize[1]) // 2
+
+    textX = ((imgWidth - textSize[0]) // 2) + padding
+
+    drawableImg.multiline_text((textX,textY), text, fill=(0,0,0), font=font)
+
+    imgByteArr = io.BytesIO()
+    background.save(imgByteArr, format="PNG")
+    imgByteArr = imgByteArr.getvalue()
+    
+    return imgByteArr

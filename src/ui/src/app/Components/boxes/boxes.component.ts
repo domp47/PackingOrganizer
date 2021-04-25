@@ -45,4 +45,8 @@ export class BoxesComponent implements OnInit {
       this.lastRowTime = Date.now();
     }
   }
+
+  getLabel(id: number): void {
+    this.boxService.getLabel(id);
+  }
 }

@@ -54,6 +54,26 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Box'
+  /boxes/{id}/label:
+    get:
+      summary: gets the label for the box
+      operationId: getLabel
+      x-openapi-router-controller: Controllers.boxes
+      responses:
+        200:
+          description: Label for box
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+      parameters:
+        - name: id
+          description: The Id of the box
+          in: path
+          schema:
+            type: integer
+          required: true
   /boxes/{id}:
     get:
       summary: gets an existing box

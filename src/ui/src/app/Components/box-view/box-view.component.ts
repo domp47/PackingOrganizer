@@ -75,4 +75,8 @@ export class BoxViewComponent extends BaseViewComponent implements OnInit {
       this.getItems();
     });
   }
+
+  getLabel(){
+    this.boxService.getLabel(this.id);
+  }
 }
