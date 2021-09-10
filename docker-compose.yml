@@ -1,0 +1,11 @@
+services:
+  web:
+    build: ./src/ui/
+    restart: always
+    ports:
+      - "8081:80"
+  api:
+    build: ./src/api/
+    restart: always
+    ports:
+      - "5001:5000"
