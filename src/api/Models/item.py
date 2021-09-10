@@ -1,4 +1,4 @@
-class Item():
+class Item:
     def __init__(self, body: dict = None):
         if body is None:
             return

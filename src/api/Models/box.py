@@ -1,4 +1,4 @@
-class Box():
+class Box:
     def __init__(self, body: dict = None):
         if body is None:
             return

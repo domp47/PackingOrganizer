@@ -1,71 +1,61 @@
-import pyodbc
-import json
-import os
-import configparser
-import qrcode
-import os
 import io
+import os
 import textwrap
 
+import psycopg2
+import qrcode
 from PIL import Image, ImageDraw, ImageFont
 from flask import Response
+
+from Controllers.config import dbParams, boxViewUrl
 from Models.box import Box
 from Models.item import Item
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-configFilename = os.path.join(dir_path, "..", "config.ini")
 fontFile = os.path.join(dir_path, "..", "Roboto.ttf")
-
 font = ImageFont.truetype(fontFile, 50)
 
 
-config = configparser.RawConfigParser()
-config.read(configFilename)
-dbString = config['DATABASE']['ConnectionString']
+def list_boxes(page_size: int = None, page_number: int = None, search_filter: str = None) -> str:
+    query_cmd = "SELECT id, label, description FROM box"
+    count_cmd = "SELECT COUNT(*) FROM box"
+    parameters = []
 
-boxViewUrl = config['APP_SETTINGS']['ViewBoxUrl']
+    if search_filter is not None:
+        query_cmd += " WHERE LOWER(Label) LIKE LOWER(%s)"
+        count_cmd += " WHERE LOWER(Label) LIKE LOWER(%s)"
+        parameters.append(f"%{search_filter}%")
 
-def list(pageSize: int = None, pageNumber: int = None, filter: str = None) -> str:
-    queryCmd = "SELECT [Id],[Label],[Description] FROM [dbo].[Box]"
-    countCmd = "SELECT COUNT(*) FROM [dbo].[Box]"
-    paramters = []
-
-    if filter is not None:
-        queryCmd += " WHERE LOWER(Label) LIKE LOWER(?)"
-        countCmd += " WHERE LOWER(Label) LIKE LOWER(?)"
-        paramters.append(f"%{filter}%")
-
-    if type(pageSize) is int and type(pageNumber) is int and pageSize is not None and pageNumber is not None:
-        if pageSize < 0 or pageSize > 100:
+    if type(page_size) is int and type(page_number) is int and page_size is not None and page_number is not None:
+        if page_size < 0 or page_size > 100:
             return Response(
                 "pageSize must be between 0 and 100 if supplied",
                 status=400,
             )
 
-        if type(pageNumber) is not int or pageNumber < 0:
+        if type(page_number) is not int or page_number < 0:
             return Response(
                 "pageNumber must be greather than or equal to 0",
                 status=400,
             )
-        queryCmd += " ORDER BY Id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY"
-        paramters.append((pageNumber)*pageSize)
-        paramters.append(pageSize)
+        query_cmd += " ORDER BY id OFFSET %s ROWS FETCH NEXT %s ROWS ONLY"
+        parameters.append(page_number * page_size)
+        parameters.append(page_size)
     
     results = []
-    count = 0
-    with pyodbc.connect(dbString) as conn:
+    with psycopg2.connect(**dbParams) as conn:
         with conn.cursor() as cursor:
-            if filter is not None:
-                cursor.execute(countCmd, f"%{filter}%")
-                count = cursor.fetchval()
+            if search_filter is not None:
+                cursor.execute(count_cmd, f"%{search_filter}%")
+                count = cursor.fetchone()
             else:
-                cursor.execute(countCmd)
-                count = cursor.fetchval()
+                cursor.execute(count_cmd)
+                count = cursor.fetchone()
 
-            if len(paramters) > 0:
-                cursor.execute(queryCmd, tuple(paramters))
+            if len(parameters) > 0:
+                cursor.execute(query_cmd, tuple(parameters))
             else:
-                cursor.execute(queryCmd)
+                cursor.execute(query_cmd)
 
             row = cursor.fetchone()
             while row:
@@ -78,38 +68,34 @@ def list(pageSize: int = None, pageNumber: int = None, filter: str = None) -> st
                 row = cursor.fetchone()
     return {'count': count, 'result': results}
 
-def add(body: Box) -> str:
+
+def add(body: dict) -> Box:
     
     body = Box(body)
 
-    if isNullOrWhiteSpace(body.description):
+    if is_null_or_white_space(body.description):
         return Response(
                 "Description is required",
                 status=400,
             )
-    if isNullOrWhiteSpace(body.label):
+    if is_null_or_white_space(body.label):
         return Response(
                 "Label is required",
                 status=400,
             )
 
     sql = """
-        SET NOCOUNT ON;
-        DECLARE @InsertedRecord TABLE(Id bigint, Label nvarchar(max), Description nvarchar(max)); 
-
-        INSERT [dbo].[Box] ([Label], [Description]) OUTPUT INSERTED.Id, INSERTED.Label, INSERTED.Description INTO @InsertedRecord VALUES (?, ?);
-        
-        SELECT * FROM @InsertedRecord;
+        INSERT INTO box (label, description) VALUES (%s, %s) RETURNING id, label, description;
         """
 
     result = None
-    with pyodbc.connect(dbString) as conn:
+    with psycopg2.connect(**dbParams) as conn:
         with conn.cursor() as cursor:
             
             cursor.execute(sql, (body.label, body.description))
 
             row = cursor.fetchone()
-            cursor.commit()
+            conn.commit()
             if row:
                 box = Box()
                 box.id = row[0]
@@ -120,25 +106,26 @@ def add(body: Box) -> str:
         
     return result
 
-def get(id: int) -> str:
-    exists = "Select Case When Exists (SELECT [Id] FROM [dbo].[Box] WHERE [Id] = ?) Then 1 Else 0 End;"
-    sql    = "SELECT [Id],[Label],[Description] FROM [dbo].[Box] WHERE [Id] = ?"
+
+def get(box_id: int) -> Box:
+    exists = "SELECT CASE WHEN EXISTS (SELECT id FROM box WHERE id = %s) THEN 1 ELSE 0 END;"
+    sql = "SELECT id, label, description FROM box WHERE id = %s"
 
     result = None
-    with pyodbc.connect(dbString) as conn:
+    with psycopg2.connect(**dbParams) as conn:
         with conn.cursor() as cursor:
             
-            cursor.execute(exists, id)
-            if cursor.fetchval() != 1:
+            cursor.execute(exists, [box_id])
+            if cursor.fetchone()[0] != 1:
                 return Response(
                     "Not Found",
                     status=404,
                 )
 
-            cursor.execute(sql, id)
+            cursor.execute(sql, [box_id])
 
             row = cursor.fetchone()
-            cursor.commit()
+            conn.commit()
             if row:
                 box = Box()
                 box.id = row[0]
@@ -148,49 +135,43 @@ def get(id: int) -> str:
                 result = box
         
     return result
-
             
 
-def update(id: int, body: Box) -> str:
+def update(box_id: int, body: dict) -> Box:
     body = Box(body)
 
-    if isNullOrWhiteSpace(body.description):
+    if is_null_or_white_space(body.description):
         return Response(
                 "Description is required",
                 status=400,
             )
-    if isNullOrWhiteSpace(body.label):
+    if is_null_or_white_space(body.label):
         return Response(
                 "Label is required",
                 status=400,
             )
 
-    exists = "Select Case When Exists (SELECT [Id] FROM [dbo].[Box] WHERE [Id] = ?) Then 1 Else 0 End;"
+    exists = "SELECT CASE WHEN EXISTS (SELECT id FROM box WHERE id = %s) THEN 1 ELSE 0 END;"
 
     sql = """
-        SET NOCOUNT ON;
-        DECLARE @UpdatedRecord TABLE(Id bigint, Label nvarchar(max), Description nvarchar(max)); 
-
-        UPDATE [dbo].[Box] SET [Label] = ?, [Description] = ? OUTPUT INSERTED.Id, INSERTED.Label, INSERTED.Description INTO @UpdatedRecord WHERE [Id] = ?;
-        
-        SELECT * FROM @UpdatedRecord;
+        UPDATE box SET label = %s, description = %s WHERE id = %s RETURNING id, label, description;
         """
 
     result = None
-    with pyodbc.connect(dbString) as conn:
+    with psycopg2.connect(**dbParams) as conn:
         with conn.cursor() as cursor:
             
-            cursor.execute(exists, id)
-            if cursor.fetchval() != 1:
+            cursor.execute(exists, [box_id])
+            if cursor.fetchone()[0] != 1:
                 return Response(
                     "Not Found",
                     status=404,
                 )
 
-            cursor.execute(sql, (body.label, body.description, id))
+            cursor.execute(sql, (body.label, body.description, box_id))
 
             row = cursor.fetchone()
-            cursor.commit()
+            conn.commit()
             if row:
                 box = Box()
                 box.id = row[0]
@@ -201,43 +182,44 @@ def update(id: int, body: Box) -> str:
         
     return result
 
-def getLabel(id: int) -> str:
-    exists = "Select Case When Exists (SELECT [Id] FROM [dbo].[Box] WHERE [Id] = ?) Then 1 Else 0 End;"
-    sql = "SELECT Label FROM [dbo].[Box] WHERE [Id] = ?"
 
-    label = ""
-    with pyodbc.connect(dbString) as conn:
+def get_label(box_id: int) -> bytes:
+    exists = "SELECT CASE WHEN EXISTS (SELECT id FROM box WHERE id = %s) THEN 1 ELSE 0 END;"
+    sql = "SELECT label FROM box WHERE id = %s"
+
+    with psycopg2.connect(**dbParams) as conn:
         with conn.cursor() as cursor:
             
-            cursor.execute(exists, id)
-            if cursor.fetchval() != 1:
+            cursor.execute(exists, [box_id])
+            if cursor.fetchone()[0] != 1:
                 return Response(
                     "Not Found",
                     status=404,
                 )
 
-            cursor.execute(sql, id)
-            label = cursor.fetchval()
+            cursor.execute(sql, [box_id])
+            label = cursor.fetchone()[0]
         
-    return getLabelImage(label, boxViewUrl.replace("{id}", f"{id}"))
+    return get_label_image(label, boxViewUrl.replace("{id}", f"{box_id}"))
 
-def delete(id: int) -> Response:
-    exists = "Select Case When Exists (SELECT [Id] FROM [dbo].[Box] WHERE [Id] = ?) Then 1 Else 0 End;"
 
-    sql = "DELETE FROM [dbo].[Box] WHERE [Id] = ?"
+def delete(box_id: int) -> Response:
+    exists = "SELECT CASE WHEN EXISTS (SELECT id FROM box WHERE id = %s) THEN 1 ELSE 0 END;"
 
-    with pyodbc.connect(dbString) as conn:
+    sql = "DELETE FROM box WHERE id = %s"
+
+    with psycopg2.connect(**dbParams) as conn:
         with conn.cursor() as cursor:
             
-            cursor.execute(exists, id)
-            if cursor.fetchval() != 1:
+            cursor.execute(exists, [box_id])
+            if cursor.fetchone()[0] != 1:
                 return Response(
                     "Not Found",
                     status=404,
                 )
 
-            cursor.execute(sql, id)
-            cursor.commit()
+            cursor.execute(sql, [box_id])
+            conn.commit()
 
     return Response(
         None,
@@ -245,43 +227,43 @@ def delete(id: int) -> Response:
     )
             
 
-def listItems(id:int, pageSize: int = None, pageNumber: int = None, filter: str = None) -> str:
-    queryCmd = "SELECT [Id],[BoxId],[Name] FROM [dbo].[Item] WHERE [BoxId] = ?"
-    countCmd = "SELECT COUNT(*) FROM [dbo].[Item] WHERE [BoxId] = ?"
-    paramters = [id]
+def list_items(box_id: int, page_size: int = None, page_number: int = None, search_filter: str = None) -> dict:
+    query_cmd = "SELECT id, box_id, name FROM item WHERE box_id = %s"
+    count_cmd = "SELECT COUNT(*) FROM item WHERE box_id = %s"
+    parameters = [box_id]
 
-    if filter is not None:
-        queryCmd += " AND LOWER(Name) LIKE LOWER(?)"
-        countCmd += " AND LOWER(Name) LIKE LOWER(?)"
-        paramters.append(f"%{filter}%")
+    if search_filter is not None:
+        query_cmd += " AND LOWER(Name) LIKE LOWER(%s)"
+        count_cmd += " AND LOWER(Name) LIKE LOWER(%s)"
+        parameters.append(f"%{search_filter}%")
 
-    if type(pageSize) is int and type(pageNumber) is int and pageSize is not None and pageNumber is not None:
-        if pageSize < 0 or pageSize > 100:
+    if type(page_size) is int and type(page_number) is int and page_size is not None and page_number is not None:
+        if page_size < 0 or page_size > 100:
             return Response(
                 "pageSize must be between 0 and 100 if supplied",
                 status=400,
             )
 
-        if type(pageNumber) is not int or pageNumber < 0:
+        if type(page_number) is not int or page_number < 0:
             return Response(
-                "pageNumber must be greather than or equal to 0",
+                "pageNumber must be greater than or equal to 0",
                 status=400,
             )
-        queryCmd += " ORDER BY Id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY"
-        paramters.append((pageNumber)*pageSize)
-        paramters.append(pageSize)
+        query_cmd += " ORDER BY id OFFSET %s ROWS FETCH NEXT %s ROWS ONLY"
+        parameters.append(page_number * page_size)
+        parameters.append(page_size)
     
     results = []
-    with pyodbc.connect(dbString) as conn:
+    with psycopg2.connect(**dbParams) as conn:
         with conn.cursor() as cursor:
-            if filter is not None:
-                cursor.execute(countCmd, id, f"%{filter}%")
-                count = cursor.fetchval()
+            if search_filter is not None:
+                cursor.execute(count_cmd, [box_id], f"%{search_filter}%")
+                count = cursor.fetchone()
             else:
-                cursor.execute(countCmd, id)
-                count = cursor.fetchval()
+                cursor.execute(count_cmd, [box_id])
+                count = cursor.fetchone()
 
-            cursor.execute(queryCmd, tuple(paramters))
+            cursor.execute(query_cmd, parameters)
 
             row = cursor.fetchone()
             while row:
@@ -294,41 +276,37 @@ def listItems(id:int, pageSize: int = None, pageNumber: int = None, filter: str 
                 row = cursor.fetchone()
     return {'count': count, 'result': results}
 
-def addItem(id: int, body: Item) -> str:
+
+def add_item(box_id: int, body: dict) -> Item:
     body = Item(body)
 
-    if isNullOrWhiteSpace(body.name):
+    if is_null_or_white_space(body.name):
         return Response(
                 "Name is required",
                 status=400,
             )
 
-    exists = "Select Case When Exists (SELECT [Id] FROM [dbo].[Box] WHERE [Id] = ?) Then 1 Else 0 End;"
+    exists = "SELECT CASE WHEN EXISTS (SELECT id FROM box WHERE id = %s) THEN 1 ELSE 0 END;"
 
     sql = """
-        SET NOCOUNT ON;
-        DECLARE @InsertedRecord TABLE(Id bigint, BoxId bigint, Name nvarchar(max)); 
-
-        INSERT [dbo].[Item] ([BoxId], [Name]) OUTPUT INSERTED.Id, INSERTED.BoxId, INSERTED.Name INTO @InsertedRecord VALUES (?, ?);
-        
-        SELECT * FROM @InsertedRecord;
+        INSERT INTO item (box_id, name) VALUES (%s, %s) RETURNING id, box_id, name;
         """
 
     result = None
-    with pyodbc.connect(dbString) as conn:
+    with psycopg2.connect(**dbParams) as conn:
         with conn.cursor() as cursor:
             
-            cursor.execute(exists, id)
-            if cursor.fetchval() != 1:
+            cursor.execute(exists, [box_id])
+            if cursor.fetchone()[0] != 1:
                 return Response(
                     "Not Found",
                     status=404,
                 )
 
-            cursor.execute(sql, (id, body.name))
+            cursor.execute(sql, (box_id, body.name))
 
             row = cursor.fetchone()
-            cursor.commit()
+            conn.commit()
             if row:
                 item = Item()
                 item.id = row[0]
@@ -339,11 +317,13 @@ def addItem(id: int, body: Item) -> str:
         
     return result
 
-def isNullOrWhiteSpace(s: str) -> bool:
+
+def is_null_or_white_space(s: str) -> bool:
     return s is None or s == "" or s.isspace()
 
-def getLabelImage(text: str, url: str) -> bytes:
-    #Creating an instance of qrcode
+
+def get_label_image(text: str, url: str) -> bytes:
+    # Creating an instance of qrcode
     qr = qrcode.QRCode(
             version=5,
             box_size=15,
@@ -353,32 +333,32 @@ def getLabelImage(text: str, url: str) -> bytes:
     img = qr.make_image(fill='black', back_color='white')
 
     # Put the QR Code on an blank 800x1000 Image
-    imgWidth, imgHeight = img.size
+    img_width, img_height = img.size
     background = Image.new('RGBA', (800, 1000), (255, 255, 255, 255))
-    bgWidth, bgHeight = background.size
-    offset = ((bgWidth - imgWidth) // 2, (bgHeight - imgHeight))
+    bg_width, bg_height = background.size
+    offset = ((bg_width - img_width) // 2, (bg_height - img_height))
     background.paste(img, offset)
 
-    drawableImg = ImageDraw.Draw(background)
+    drawable_img = ImageDraw.Draw(background)
 
     # Wrap the text if it's too long
     padding = 40
-    textLen, _ = drawableImg.textsize(text, font=font)
-    avgPixelsPerChar = textLen / len(text)
-    text = "\n".join(textwrap.wrap(text, width=(imgWidth-padding)/avgPixelsPerChar))
+    text_len, _ = drawable_img.textsize(text, font=font)
+    avg_pixels_per_char = text_len / len(text)
+    text = "\n".join(textwrap.wrap(text, width=(img_width-padding)/avg_pixels_per_char))
 
-    textSize = drawableImg.multiline_textsize(text, font=font)
+    text_size = drawable_img.multiline_textsize(text, font=font)
 
-    textY = padding // 2
-    if textSize[1] < offset[1]:
-        textY = (offset[1] - textSize[1]) // 2
+    text_y = padding // 2
+    if text_size[1] < offset[1]:
+        text_y = (offset[1] - text_size[1]) // 2
 
-    textX = ((imgWidth - textSize[0]) // 2) + padding
+    text_x = ((img_width - text_size[0]) // 2) + padding
 
-    drawableImg.multiline_text((textX,textY), text, fill=(0,0,0), font=font)
+    drawable_img.multiline_text((text_x, text_y), text, fill=(0, 0, 0), font=font)
 
-    imgByteArr = io.BytesIO()
-    background.save(imgByteArr, format="PNG")
-    imgByteArr = imgByteArr.getvalue()
+    img_byte_arr = io.BytesIO()
+    background.save(img_byte_arr, format="PNG")
+    img_byte_arr = img_byte_arr.getvalue()
     
-    return imgByteArr
+    return img_byte_arr

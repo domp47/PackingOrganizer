@@ -8,7 +8,7 @@ paths:
   /boxes:
     get:
       summary: List all boxes/ search for a box
-      operationId: list
+      operationId: list_boxes
       x-openapi-router-controller: Controllers.boxes
       responses:
         200:
@@ -18,13 +18,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Box'
       parameters:
-        - name: pageSize
+        - name: page_size
           description: The Size of the paged results
           in: query
           schema:
             type: integer
           required: false
-        - name: pageNumber
+        - name: page_number
           description: The page number of the results
           in: query
           schema:
@@ -54,10 +54,10 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Box'
-  /boxes/{id}/label:
+  /boxes/{box_id}/label:
     get:
       summary: gets the label for the box
-      operationId: getLabel
+      operationId: get_label
       x-openapi-router-controller: Controllers.boxes
       responses:
         200:
@@ -68,13 +68,13 @@ paths:
                 type: string
                 format: binary
       parameters:
-        - name: id
+        - name: box_id
           description: The Id of the box
           in: path
           schema:
             type: integer
           required: true
-  /boxes/{id}:
+  /boxes/{box_id}:
     get:
       summary: gets an existing box
       operationId: get
@@ -87,7 +87,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Box'
       parameters:
-        - name: id
+        - name: box_id
           description: The Id of the box to get
           in: path
           schema:
@@ -106,7 +106,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Box'
       parameters:
-        - name: id
+        - name: box_id
           description: The Id of the box to update
           in: path
           schema:
@@ -128,17 +128,17 @@ paths:
         204:
           description: Box has been deleted
       parameters:
-        - name: id
+        - name: box_id
           description: The Id of the box to delete
           in: path
           schema:
             type: integer
           required: true
           
-  /boxes/{id}/items:
+  /boxes/{box_id}/items:
     get:
       summary: List all boxes/ search for a box
-      operationId: listItems
+      operationId: list_items
       x-openapi-router-controller: Controllers.boxes
       responses:
         200:
@@ -148,25 +148,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/Item'
       parameters:
-        - name: id
+        - name: box_id
           description: The Id of the box this item belongs to
           in: path
           schema:
             type: integer
           required: true
-        - name: pageSize
+        - name: page_size
           description: The Size of the paged results
           in: query
           schema:
             type: integer
           required: false
-        - name: pageNumber
+        - name: page_number
           description: The page number of the results
           in: query
           schema:
             type: integer
           required: false
-        - name: filter
+        - name: search_filter
           description: The filter to search labels by
           in: query
           schema:
@@ -174,7 +174,7 @@ paths:
           required: false
     post:
       summary: Add a new Item
-      operationId: addItem
+      operationId: add_item
       x-openapi-router-controller: Controllers.boxes
       responses:
         200:
@@ -184,7 +184,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Item'
       parameters:
-        - name: id
+        - name: box_id
           description: The Id of the box this item belongs to
           in: path
           schema:
@@ -197,16 +197,16 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Item'
-  /items/{id}:
+  /items/{item_id}:
     delete:
-      operationId: itemDelete
+      operationId: item_delete
       summary: Delete an item
       x-openapi-router-controller: Controllers.items
       responses:
         204:
           description: Item has been deleted
       parameters:
-        - name: id
+        - name: item_id
           description: The Id of the item to delete
           in: path
           schema:

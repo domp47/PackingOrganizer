@@ -1,34 +1,26 @@
-import pyodbc
-import json
-import os
-import configparser
+import psycopg2
 
 from flask import Response
+from Controllers.config import dbParams
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
-configFilename = os.path.join(dir_path, "..", "config.ini")
 
-config = configparser.RawConfigParser()
-config.read(configFilename)
-dbString = config['DATABASE']['ConnectionString']
+def item_delete(item_id: int) -> Response:
+    exists = "SELECT CASE WHEN EXISTS (SELECT id FROM item WHERE id = %s) THEN 1 ELSE 0 END;"
 
-def itemDelete(id: int) -> Response:
-    exists = "Select Case When Exists (SELECT [Id] FROM [dbo].[Item] WHERE [Id] = ?) Then 1 Else 0 End;"
+    sql = "DELETE FROM item WHERE id = %s"
 
-    sql = "DELETE FROM [dbo].[Item] WHERE [Id] = ?"
-
-    with pyodbc.connect(dbString) as conn:
+    with psycopg2.connect(**dbParams) as conn:
         with conn.cursor() as cursor:
             
-            cursor.execute(exists, id)
-            if cursor.fetchval() != 1:
+            cursor.execute(exists, [item_id])
+            if cursor.fetchone()[0] != 1:
                 return Response(
                     "Not Found",
                     status=404,
                 )
 
-            cursor.execute(sql, id)
-            cursor.commit()
+            cursor.execute(sql, [item_id])
+            conn.commit()
 
     return Response(
         None,

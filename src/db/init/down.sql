@@ -1,3 +1,3 @@
-DROP TABLE dbo.Item;
+DROP TABLE item;
 
-DROP TABLE dbo.Box;
+DROP TABLE box;

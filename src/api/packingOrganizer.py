@@ -6,7 +6,7 @@ from flask_cors import CORS
 from encoder import Encoder
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-configFilename = os.path.join(dir_path,"config.ini")
+configFilename = os.path.join(dir_path, "config.ini")
 
 config = configparser.RawConfigParser()
 config.read(configFilename)
@@ -14,7 +14,7 @@ config.read(configFilename)
 dbString = config['DATABASE']['ConnectionString']
 
 if dbString is None:
-    exit
+    raise ValueError("DATABASE/ConnectionString cannot be empty.")
 
 # Create the application instance
 app = connexion.App(__name__, specification_dir='./')

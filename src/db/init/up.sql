@@ -1,15 +1,13 @@
-CREATE TABLE dbo.Box ( 
-	Id                   bigint NOT NULL   IDENTITY ,
-	Label                nvarchar(max) NOT NULL    ,
-	Description          nvarchar(max) NOT NULL    ,
-	CONSTRAINT Pk_Box_Id PRIMARY KEY  ( Id ) 
- );
+CREATE TABLE box ( 
+	id                   SERIAL PRIMARY KEY,
+	label                varchar(512) NOT NULL,
+	description          varchar(512) NOT NULL
+);
 
-CREATE TABLE dbo.Item ( 
-	Id                   bigint NOT NULL   IDENTITY ,
-	BoxId                bigint NOT NULL    ,
-	Name                 nvarchar(max) NOT NULL    ,
-	CONSTRAINT Pk_Item_Id PRIMARY KEY  ( Id ) 
- );
+CREATE TABLE item ( 
+	id                   SERIAL PRIMARY KEY,
+	box_id               bigint NOT NULL,
+	name                 varchar(512) NOT NULL
+);
 
-ALTER TABLE dbo.Item ADD CONSTRAINT fk_item_box FOREIGN KEY ( BoxId ) REFERENCES dbo.Box( Id ) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "item" ADD FOREIGN KEY ("box_id") REFERENCES "box" ("id");
