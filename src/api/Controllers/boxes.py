@@ -16,7 +16,7 @@ fontFile = os.path.join(dir_path, "..", "Roboto.ttf")
 font = ImageFont.truetype(fontFile, 50)
 
 
-def list_boxes(page_size: int = None, page_number: int = None, search_filter: str = None) -> str:
+def list_boxes(page_size: int = None, page_number: int = None, search_filter: str = None) -> dict:
     query_cmd = "SELECT id, label, description FROM box"
     count_cmd = "SELECT COUNT(*) FROM box"
     parameters = []

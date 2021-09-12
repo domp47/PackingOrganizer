@@ -17,9 +17,9 @@ export class BoxService extends BaseService {
     var params = new HttpParams();
 
     if(pageSize != null)
-      params = params.set('pageSize', pageSize.toString());
+      params = params.set('page_size', pageSize.toString());
     if(pageNumber != null)
-      params = params.set('pageNumber', pageNumber.toString());
+      params = params.set('page_number', pageNumber.toString());
     if(filter != null)
       params = params.set('filter', filter);
 
@@ -61,9 +61,9 @@ export class BoxService extends BaseService {
     var params = new HttpParams();
 
     if(pageSize != null)
-      params = params.set('pageSize', pageSize.toString());
+      params = params.set('page_size', pageSize.toString());
     if(pageNumber != null)
-      params = params.set('pageNumber', pageNumber.toString());
+      params = params.set('page_number', pageNumber.toString());
     if(filter != null)
       params = params.set('filter', filter);
 
