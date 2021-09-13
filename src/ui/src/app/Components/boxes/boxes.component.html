@@ -1,5 +1,7 @@
 <mat-card>
-    <div class="table-container">
+    <button class="mb-1" mat-raised-button (click)="getAllLabels()" color="primary">Download All Labels</button>
+    <mat-divider [inset]="true"></mat-divider>
+    <div class="mt-1 table-container">
         <table mat-table [dataSource]="dataSource" style="width: 100%;" aria-label="Boxes Table">
             
             <!-- Box Label Column -->

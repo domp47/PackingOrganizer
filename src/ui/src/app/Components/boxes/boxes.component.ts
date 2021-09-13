@@ -49,4 +49,8 @@ export class BoxesComponent implements OnInit {
   getLabel(id: number): void {
     this.boxService.getLabel(id);
   }
+
+  getAllLabels(): void {
+    this.boxService.getAllLabels();
+  }
 }

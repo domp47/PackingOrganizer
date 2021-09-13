@@ -6,6 +6,9 @@ import psycopg2
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
 from flask import Response
+import numpy as np
+from matplotlib.backends.backend_pdf import PdfPages
+import matplotlib.pyplot as plt
 
 from Controllers.config import dbParams, boxViewUrl
 from Models.box import Box
@@ -201,6 +204,38 @@ def get_label(box_id: int) -> bytes:
             label = cursor.fetchone()[0]
         
     return get_label_image(label, boxViewUrl.replace("{id}", f"{box_id}"))
+
+
+def get_labels() -> bytes:
+    sql = "SELECT id, label FROM box"
+
+    fp = io.BytesIO()
+    pp = PdfPages(fp)
+
+    with psycopg2.connect(**dbParams) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(sql)
+
+            row = cursor.fetchone()
+            while row:
+                label_data = get_label_image(row[1], boxViewUrl.replace("{id}", f"{row[0]}"))
+                label_img = Image.open(io.BytesIO(label_data))
+                label_img.load()
+                im = np.asarray(label_img, dtype="int32")
+
+                plt.imshow(im)
+                a = plt.gca()
+                a.get_xaxis().set_visible(False)  # We don't need axis ticks
+                a.get_yaxis().set_visible(False)
+                pp.savefig(plt.gcf())  # This generates a page
+
+                row = cursor.fetchone()
+
+    pp.close()
+    pdf_byte_arr = fp.getvalue()
+    # pp.close()
+    fp.close()
+    return pdf_byte_arr
 
 
 def delete(box_id: int) -> Response:

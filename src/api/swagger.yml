@@ -74,6 +74,19 @@ paths:
           schema:
             type: integer
           required: true
+  /boxes/labels:
+    get:
+      summary: gets the labels for all the boxes
+      operationId: get_labels
+      x-openapi-router-controller: Controllers.boxes
+      responses:
+        200:
+          description: Labels for all boxes
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
   /boxes/{box_id}:
     get:
       summary: gets an existing box

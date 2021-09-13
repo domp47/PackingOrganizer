@@ -83,4 +83,8 @@ export class BoxService extends BaseService {
   getLabel(id: number): void {
     window.open(`${this.url}/${id}/label`, "_blank");
   }
+
+  getAllLabels(): void {
+    window.open(`${this.url}/labels`, "_blank");
+  }
 }
