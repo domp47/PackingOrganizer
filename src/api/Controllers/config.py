@@ -1,3 +1,4 @@
+"""Get Configuration Items."""
 import configparser
 import os
 
@@ -7,7 +8,7 @@ configFilename = os.path.join(dir_path, "..", "config.ini")
 config = configparser.RawConfigParser()
 config.read(configFilename)
 
-dbString = config['DATABASE']['ConnectionString']
-dbParams = dict(entry.split('=') for entry in dbString.split(';'))
+dbString = config["DATABASE"]["ConnectionString"]
+dbParams = dict(entry.split("=") for entry in dbString.split(";"))
 
-boxViewUrl = config['APP_SETTINGS']['ViewBoxUrl']
+boxViewUrl = config["APP_SETTINGS"]["ViewBoxUrl"]

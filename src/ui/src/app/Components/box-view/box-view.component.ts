@@ -13,20 +13,24 @@ import { ItemService } from 'src/app/Services/Item/item.service';
 @Component({
   selector: 'app-box-view',
   templateUrl: './box-view.component.html',
-  styleUrls: ['./box-view.component.scss']
+  styleUrls: ['./box-view.component.scss'],
 })
 export class BoxViewComponent extends BaseViewComponent implements OnInit {
-  
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
 
-  displayedColumns = ["name", "actions"];
+  displayedColumns = ['name', 'actions'];
   dataSource!: ItemDataSource;
-  
+
   itemSearchControl: FormControl = new FormControl();
   itemFilter: string | null = null;
   box: any;
 
-  constructor(activatedRoute: ActivatedRoute, private boxService: BoxService, private dialog: MatDialog, private itemService: ItemService) { 
+  constructor(
+    activatedRoute: ActivatedRoute,
+    private boxService: BoxService,
+    private dialog: MatDialog,
+    private itemService: ItemService
+  ) {
     super(activatedRoute);
   }
 
@@ -34,40 +38,48 @@ export class BoxViewComponent extends BaseViewComponent implements OnInit {
     this.dataSource = new ItemDataSource(this.boxService);
     super.ngOnInit();
 
-    this.itemSearchControl.valueChanges.pipe(debounceTime(750)).subscribe(value => {
-      this.itemFilter = value;
-      this.getItems();
-    })
+    this.itemSearchControl.valueChanges
+      .pipe(debounceTime(750))
+      .subscribe((value) => {
+        this.itemFilter = value;
+        this.getItems();
+      });
   }
 
   ngAfterViewInit(): void {
-    this.paginator.page
-    .pipe(tap(() => this.getItems()))
-    .subscribe();
+    this.paginator.page.pipe(tap(() => this.getItems())).subscribe();
     this.getItems();
   }
 
   getItem(id: number): void {
-    this.boxService.get(id).subscribe(data => {
+    this.boxService.get(id).subscribe((data) => {
       this.box = data;
       this.getItems();
     });
   }
 
-  getItems(){
-    this.dataSource.loadItems(this.id, this.paginator.pageIndex, this.paginator.pageSize, this.itemFilter)
+  getItems() {
+    this.dataSource.loadItems(
+      this.id,
+      this.paginator.pageIndex,
+      this.paginator.pageSize,
+      this.itemFilter
+    );
   }
 
-  deleteItemClicked(id: number): void{
+  deleteItemClicked(id: number): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: "Are you sure you would like to delete this item?"
+      data: 'Are you sure you would like to delete this item?',
     });
 
-    dialogRef.afterClosed().pipe(first()).subscribe(result => {
-      if(result){
-        this.deleteItem(id);
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(first())
+      .subscribe((result) => {
+        if (result) {
+          this.deleteItem(id);
+        }
+      });
   }
 
   deleteItem(id: number): void {
@@ -76,7 +88,7 @@ export class BoxViewComponent extends BaseViewComponent implements OnInit {
     });
   }
 
-  getLabel(){
+  getLabel() {
     this.boxService.getLabel(this.id);
   }
 }

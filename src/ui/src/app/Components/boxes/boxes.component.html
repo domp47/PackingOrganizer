@@ -1,45 +1,71 @@
 <mat-card>
-    <button class="mb-1" mat-raised-button (click)="getAllLabels()" color="primary">Download All Labels</button>
-    <mat-divider [inset]="true"></mat-divider>
-    <div class="mt-1 table-container">
-        <table mat-table [dataSource]="dataSource" style="width: 100%;" aria-label="Boxes Table">
-            
-            <!-- Box Label Column -->
-            <ng-container matColumnDef="label">
-                <th mat-header-cell *matHeaderCellDef> Box Label </th>
-                <td mat-cell *matCellDef="let element"> {{element.label}} </td>
-            </ng-container>
-            
-            <!-- Description -->
-            <ng-container matColumnDef="description">
-                <th mat-header-cell *matHeaderCellDef> Description </th>
-                <td mat-cell *matCellDef="let element"> {{element.description}} </td>
-            </ng-container>
+  <button
+    class="mb-1"
+    mat-raised-button
+    (click)="getAllLabels()"
+    color="primary"
+  >
+    Download All Labels
+  </button>
+  <mat-divider [inset]="true"></mat-divider>
+  <div class="mt-1 table-container">
+    <table
+      mat-table
+      [dataSource]="dataSource"
+      style="width: 100%"
+      aria-label="Boxes Table"
+    >
+      <!-- Box Label Column -->
+      <ng-container matColumnDef="label">
+        <th mat-header-cell *matHeaderCellDef>Box Label</th>
+        <td mat-cell *matCellDef="let element">{{ element.label }}</td>
+      </ng-container>
 
-            <!-- QR Label -->
-            <ng-container matColumnDef="qr">
-                <th mat-header-cell *matHeaderCellDef> QR Label </th>
-                <td mat-cell *matCellDef="let element"> 
-                    <button mat-button color="primary" (click)="getLabel(element.id)"><mat-icon>file_download</mat-icon>Download</button>
-                </td>
-            </ng-container>
+      <!-- Description -->
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Description</th>
+        <td mat-cell *matCellDef="let element">{{ element.description }}</td>
+      </ng-container>
 
-            <!-- Actions Column -->
-            <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef aria-label="Get QR Code Label"></th>
-                <td mat-cell class="actionColumn" *matCellDef="let element">
-                    <a [routerLink]="'/box/'+element.id+'/view'">
-                        <button mat-raised-button color="primary">View Contents</button>
-                    </a>
-                </td>
-            </ng-container>
-        
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="rowClicked(row)" class="ripple"></tr>
-        </table>
-    </div>
-    <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" [length]="dataSource.dataCount" showFirstLastButtons></mat-paginator>
-    <div class="mt-sm mb-2">
-        <a class="add-item-button" [routerLink]="'/box/0/edit'">+ Add New Box</a>
-    </div>
+      <!-- QR Label -->
+      <ng-container matColumnDef="qr">
+        <th mat-header-cell *matHeaderCellDef>QR Label</th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-button color="primary" (click)="getLabel(element.id)">
+            <mat-icon>file_download</mat-icon>Download
+          </button>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          aria-label="Get QR Code Label"
+        ></th>
+        <td mat-cell class="actionColumn" *matCellDef="let element">
+          <a [routerLink]="'/box/' + element.id + '/view'">
+            <button mat-raised-button color="primary">View Contents</button>
+          </a>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        (click)="rowClicked(row)"
+        class="ripple"
+      ></tr>
+    </table>
+  </div>
+  <mat-paginator
+    [pageSizeOptions]="[10, 25, 50, 100]"
+    [length]="dataSource.dataCount"
+    showFirstLastButtons
+  ></mat-paginator>
+  <div class="mt-sm mb-2">
+    <a class="add-item-button" [routerLink]="'/box/0/edit'">+ Add New Box</a>
+  </div>
 </mat-card>

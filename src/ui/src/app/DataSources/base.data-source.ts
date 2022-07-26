@@ -2,21 +2,22 @@ import { CollectionViewer } from '@angular/cdk/collections';
 import { DataSource } from '@angular/cdk/table';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-export class BaseDataSource implements DataSource<Object> {
+export class BaseDataSource implements DataSource<any> {
+  protected subject = new BehaviorSubject<any[]>([]);
 
-    protected subject = new BehaviorSubject<Object[]>([]);
+  dataCount = 0;
 
-    dataCount: number = 0;
+  connect(
+    _collectionViewer: CollectionViewer
+  ): Observable<any[] | readonly any[]> {
+    return this.subject.asObservable();
+  }
+  disconnect(_collectionViewer: CollectionViewer): void {
+    this.subject.complete();
+  }
 
-    connect(collectionViewer: CollectionViewer): Observable<Object[] | readonly Object[]> {
-        return this.subject.asObservable();
-    }
-    disconnect(collectionViewer: CollectionViewer): void {
-        this.subject.complete();
-    }
-
-    clearTable(){
-        this.subject.next([]);
-        this.dataCount = 0;
-    }
+  clearTable() {
+    this.subject.next([]);
+    this.dataCount = 0;
+  }
 }

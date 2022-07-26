@@ -1,0 +1,6 @@
+**/.eslintrc.js
+**/jest.config.js
+**/protractor.conf.js
+**/karma.conf.js
+
+**/node_modules/

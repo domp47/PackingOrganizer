@@ -4,31 +4,31 @@ import { MatTabChangeEvent } from '@angular/material/tabs';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  isDarkMode: boolean = false;
+  isDarkMode = false;
 
-  constructor(private renderer: Renderer2) { 
-    let isDarkMode = +localStorage.getItem('darkMode')!;
+  constructor(private renderer: Renderer2) {
+    const isDarkMode = +localStorage.getItem('darkMode')!;
 
-    if(isDarkMode === 0){
+    if (isDarkMode === 0) {
       this.setDarkMode();
-    }else{
+    } else {
       this.setLightMode();
     }
   }
 
-  setDarkMode(){
+  setDarkMode() {
     this.isDarkMode = true;
-    localStorage.setItem('darkMode', "0");
+    localStorage.setItem('darkMode', '0');
 
     this.renderer.addClass(document.body, 'theme-alternate');
   }
 
-  setLightMode(){
+  setLightMode() {
     this.isDarkMode = false;
-    localStorage.setItem('darkMode', "1");
+    localStorage.setItem('darkMode', '1');
 
     this.renderer.removeClass(document.body, 'theme-alternate');
   }

@@ -1,27 +1,27 @@
 .actionColumn {
-    text-align: right;
+  text-align: right;
 }
 
 .ml-1 {
-    margin-left: 1rem;
+  margin-left: 1rem;
 }
 
 .mb-1 {
-    margin-bottom: 1rem !important;
+  margin-bottom: 1rem !important;
 }
 
 table {
-    min-width: 650px;
+  min-width: 650px;
 }
 
 .table-container {
-    overflow-x: auto;
+  overflow-x: auto;
 }
 
 @media only screen and (min-width: 1001px) {
-    .mat-card {
-        max-width: 1000px;
-        margin-left: auto;
-        margin-right: auto;
-    }
+  .mat-card {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }

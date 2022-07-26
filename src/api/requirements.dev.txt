@@ -1,0 +1,10 @@
+pre-commit
+
+black>=21.6b0
+isort
+pylint
+pydocstyle>=6.1.1
+pydocstyle[toml]>=6.1.1
+
+
+-r requirements.txt

@@ -1,26 +1,25 @@
-import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
-    template: ''
+  template: '',
 })
 export abstract class BaseEditComponent implements OnInit {
+  id: number;
 
-    id: number;
+  constructor(public route: ActivatedRoute) {
+    this.id = +this.route.snapshot.params['id'];
+  }
 
-    constructor(public route: ActivatedRoute) {
-        this.id = +this.route.snapshot.params["id"];
+  ngOnInit(): void {
+    if (!this.isNew()) {
+      this.getItem(this.id);
     }
+  }
 
-    ngOnInit(): void {
-        if(!this.isNew()) {
-            this.getItem(this.id);
-        }
-    }
+  isNew(): boolean {
+    return this.id === 0;
+  }
 
-    isNew(): boolean{
-        return this.id === 0;
-    }
-
-    abstract getItem(id: number): void;
+  abstract getItem(id: number): void;
 }
