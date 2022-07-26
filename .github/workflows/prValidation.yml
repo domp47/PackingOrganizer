@@ -22,7 +22,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r api/requirements.dev.txt > /dev/null
+          pip install -r src/api/requirements.dev.txt > /dev/null
 
       - name: Use Node.js 16.x
         uses: actions/setup-node@v2
