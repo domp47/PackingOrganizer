@@ -6,85 +6,90 @@ import { catchError, map } from 'rxjs/operators';
 import { BaseService } from '../base.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BoxService extends BaseService {
-  constructor(private http: HttpClient, snackBar: MatSnackBar) { 
-    super("boxes", snackBar);
+  constructor(private http: HttpClient, snackBar: MatSnackBar) {
+    super('boxes', snackBar);
   }
 
-  list(pageSize: number | null = null, pageNumber: number | null = null, filter: string | null = null): Observable<any>{
-    var params = new HttpParams();
+  list(
+    pageSize: number | null = null,
+    pageNumber: number | null = null,
+    filter: string | null = null
+  ): Observable<any> {
+    let params = new HttpParams();
 
-    if(pageSize != null)
-      params = params.set('page_size', pageSize.toString());
-    if(pageNumber != null)
+    if (pageSize != null) params = params.set('page_size', pageSize.toString());
+    if (pageNumber != null)
       params = params.set('page_number', pageNumber.toString());
-    if(filter != null)
-      params = params.set('filter', filter);
+    if (filter != null) params = params.set('filter', filter);
 
     return this.http.get(`${this.url}`, { params: params }).pipe(
-      map(data => data),
-      catchError(err => this.handleError("Error Getting Boxes", err))
+      map((data) => data),
+      catchError((err) => this.handleError('Error Getting Boxes', err))
     );
   }
 
   add(obj: any): Observable<any> {
     return this.http.post(`${this.url}`, obj).pipe(
-      map(data => data),
-      catchError(err => this.handleError("Error Adding Box", err))
+      map((data) => data),
+      catchError((err) => this.handleError('Error Adding Box', err))
     );
   }
 
   get(id: number): Observable<any> {
     return this.http.get(`${this.url}/${id}`).pipe(
-      map(data => data),
-      catchError(err => this.handleError("Error Getting Box", err))
+      map((data) => data),
+      catchError((err) => this.handleError('Error Getting Box', err))
     );
   }
 
   update(id: number, obj: any): Observable<any> {
     return this.http.put(`${this.url}/${id}`, obj).pipe(
-      map(data => data),
-      catchError(err => this.handleError("Error Updating Box", err))
+      map((data) => data),
+      catchError((err) => this.handleError('Error Updating Box', err))
     );
   }
 
   delete(id: number): Observable<any> {
     return this.http.delete(`${this.url}/${id}`).pipe(
-      map(data => data),
-      catchError(err => this.handleError("Error Deleting Box", err))
+      map((data) => data),
+      catchError((err) => this.handleError('Error Deleting Box', err))
     );
   }
 
-  listItems(id: number, pageSize: number | null = null, pageNumber: number | null = null, filter: string | null = null): Observable<any>{
-    var params = new HttpParams();
+  listItems(
+    id: number,
+    pageSize: number | null = null,
+    pageNumber: number | null = null,
+    filter: string | null = null
+  ): Observable<any> {
+    let params = new HttpParams();
 
-    if(pageSize != null)
-      params = params.set('page_size', pageSize.toString());
-    if(pageNumber != null)
+    if (pageSize != null) params = params.set('page_size', pageSize.toString());
+    if (pageNumber != null)
       params = params.set('page_number', pageNumber.toString());
-    if(filter != null)
-      params = params.set('filter', filter);
+    if (filter != null) params = params.set('filter', filter);
 
     return this.http.get(`${this.url}/${id}/items`, { params: params }).pipe(
-      map(data => data),
-      catchError(err => this.handleError("Error Getting Items", err))
+      map((data) => data),
+      catchError((err) => this.handleError('Error Getting Items', err))
     );
   }
 
   addItem(id: any, obj: any): Observable<any> {
     return this.http.post(`${this.url}/${id}/items`, obj).pipe(
-      map(data => data),
-      catchError(err => this.handleError("Error Adding Item", err))
+      map((data) => data),
+      catchError((err) => this.handleError('Error Adding Item', err))
     );
   }
 
   getLabel(id: number): void {
-    window.open(`${this.url}/${id}/label`, "_blank");
+    window.open(`${this.url}/${id}/label`, '_blank');
   }
 
   getAllLabels(): void {
-    window.open(`${this.url}/labels`, "_blank");
+    window.open(`${this.url}/labels`, '_blank');
   }
 }

@@ -16,7 +16,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Box'
+                $ref: "#/components/schemas/Box"
       parameters:
         - name: page_size
           description: The Size of the paged results
@@ -46,14 +46,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Box'
+                $ref: "#/components/schemas/Box"
       requestBody:
         description: Box to add
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Box'
+              $ref: "#/components/schemas/Box"
   /boxes/{box_id}/label:
     get:
       summary: gets the label for the box
@@ -98,7 +98,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Box'
+                $ref: "#/components/schemas/Box"
       parameters:
         - name: box_id
           description: The Id of the box to get
@@ -117,7 +117,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Box'
+                $ref: "#/components/schemas/Box"
       parameters:
         - name: box_id
           description: The Id of the box to update
@@ -131,8 +131,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Box'
-              
+              $ref: "#/components/schemas/Box"
+
     delete:
       operationId: delete
       summary: Delete a box
@@ -147,7 +147,7 @@ paths:
           schema:
             type: integer
           required: true
-          
+
   /boxes/{box_id}/items:
     get:
       summary: List all boxes/ search for a box
@@ -159,7 +159,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Item'
+                $ref: "#/components/schemas/Item"
       parameters:
         - name: box_id
           description: The Id of the box this item belongs to
@@ -195,7 +195,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Item'
+                $ref: "#/components/schemas/Item"
       parameters:
         - name: box_id
           description: The Id of the box this item belongs to
@@ -209,7 +209,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Item'
+              $ref: "#/components/schemas/Item"
   /items/{item_id}:
     delete:
       operationId: item_delete

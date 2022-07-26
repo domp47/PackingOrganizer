@@ -28,7 +28,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatExpansionModule } from '@angular/material/expansion';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { BoxesComponent } from './Components/boxes/boxes.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -38,7 +38,6 @@ import { ConfirmationDialogComponent } from './Components/confirmation-dialog/co
 import { BoxEditComponent } from './Components/box-edit/box-edit.component';
 import { ItemEditComponent } from './Components/item-edit/item-edit.component';
 
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -46,7 +45,7 @@ import { ItemEditComponent } from './Components/item-edit/item-edit.component';
     BoxViewComponent,
     ConfirmationDialogComponent,
     BoxEditComponent,
-    ItemEditComponent
+    ItemEditComponent,
   ],
   imports: [
     BrowserModule,
@@ -80,9 +79,9 @@ import { ItemEditComponent } from './Components/item-edit/item-edit.component';
     MatProgressBarModule,
     MatMenuModule,
     MatExpansionModule,
-    MatSnackBarModule
+    MatSnackBarModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

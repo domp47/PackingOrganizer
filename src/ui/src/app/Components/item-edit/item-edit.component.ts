@@ -6,45 +6,50 @@ import { BaseChildEditComponent } from '../base-child-edit.component';
 @Component({
   selector: 'app-item-edit',
   templateUrl: './item-edit.component.html',
-  styleUrls: ['./item-edit.component.scss']
+  styleUrls: ['./item-edit.component.scss'],
 })
-export class ItemEditComponent extends BaseChildEditComponent implements OnInit {
-
+export class ItemEditComponent
+  extends BaseChildEditComponent
+  implements OnInit
+{
   name: string;
 
-  constructor(activatedRoute: ActivatedRoute, private boxService: BoxService, private router: Router) {
+  constructor(
+    activatedRoute: ActivatedRoute,
+    private boxService: BoxService,
+    private router: Router
+  ) {
     super(activatedRoute);
     this.id = 0; //Remove if Edit is ever implemented
-    this.name = "";
-   }
+    this.name = '';
+  }
 
   ngOnInit(): void {
     super.ngOnInit();
   }
 
-  getItem(id: number): void {
-
+  getItem(_id: number): void {
+    // Not Implemented
   }
 
   cancel(): void {
-    if(this.isNew()){
-      this.router.navigateByUrl("/boxes");
-    }else{
-      this.router.navigateByUrl("/box/"+this.parentId+"/view");
+    if (this.isNew()) {
+      this.router.navigateByUrl('/boxes');
+    } else {
+      this.router.navigateByUrl('/box/' + this.parentId + '/view');
     }
   }
 
   save(): void {
     const obj: any = {};
-    obj["name"] = this.name;
-    obj["boxId"] = this.parentId;
+    obj['name'] = this.name;
+    obj['boxId'] = this.parentId;
     console.log(this.isNew());
 
-    if(this.isNew()) {
-     this.boxService.addItem(this.parentId, obj).subscribe(data => {
-       this.router.navigateByUrl("box/"+this.parentId+"/view");
-     });
-    }else{
+    if (this.isNew()) {
+      this.boxService.addItem(this.parentId, obj).subscribe((_data) => {
+        this.router.navigateByUrl('box/' + this.parentId + '/view');
+      });
     }
   }
 }

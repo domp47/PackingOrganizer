@@ -14,6 +14,7 @@ repos:
           - "@typescript-eslint/eslint-plugin"
           - eslint-plugin-import
           - eslint-config-prettier
+          - "@typescript-eslint/parser"
         args:
           - "--fix"
   - repo: local

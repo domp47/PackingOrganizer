@@ -1,22 +1,24 @@
-import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
-import { BaseViewComponent } from "./base-view.component";
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { BaseViewComponent } from './base-view.component';
 
 @Component({
-    template: ''
+  template: '',
 })
-export abstract class BaseChildViewComponent extends BaseViewComponent implements OnInit {
+export abstract class BaseChildViewComponent
+  extends BaseViewComponent
+  implements OnInit
+{
+  parentId: number;
 
-    parentId: number;
+  constructor(private _route: ActivatedRoute) {
+    super(_route);
+    this.parentId = +this._route.snapshot.params['parentId'];
+  }
 
-    constructor(private _route: ActivatedRoute) {
-        super(_route);
-        this.parentId = +this._route.snapshot.params["parentId"];
-    }
+  ngOnInit(): void {
+    super.ngOnInit();
+  }
 
-    ngOnInit(): void {
-        super.ngOnInit();
-    }
-
-    abstract getItem(id: number): void;
+  abstract getItem(id: number): void;
 }

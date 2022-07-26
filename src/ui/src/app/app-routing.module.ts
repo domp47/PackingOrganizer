@@ -9,32 +9,32 @@ const routes: Routes = [
   {
     path: '',
     redirectTo: 'boxes',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: 'boxes',
-    component: BoxesComponent
+    component: BoxesComponent,
   },
   {
     path: 'box/:id/view',
-    component: BoxViewComponent
+    component: BoxViewComponent,
   },
   {
     path: 'box/:id/edit',
-    component: BoxEditComponent
+    component: BoxEditComponent,
   },
   {
     path: 'box/:parentId/item/0/edit',
-    component: ItemEditComponent
+    component: ItemEditComponent,
   },
   {
     path: '**',
-    redirectTo: '/boxes'
-  }
+    redirectTo: '/boxes',
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, { useHash: false })],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

@@ -1,59 +1,80 @@
 <mat-card>
-    <h1>{{box?.label}}</h1>
+  <h1>{{ box?.label }}</h1>
 
-    <mat-divider [inset]="true"></mat-divider>
+  <mat-divider [inset]="true"></mat-divider>
 
-    <div class="details-container">
-        <div class="item-detail mt-2">
-            <span class="view-subtitle mat-h3">Description</span>
-            <span>{{box?.description}}</span>
-        </div>
+  <div class="details-container">
+    <div class="item-detail mt-2">
+      <span class="view-subtitle mat-h3">Description</span>
+      <span>{{ box?.description }}</span>
     </div>
+  </div>
 
-    <div class="mt-2 mb-2">
-        <span class="view-subtitle mat-h3">QR Code Label</span>
-        <button mat-button color="primary" class="download-button" (click)="getLabel()"><mat-icon>file_download</mat-icon>Download</button>
-    </div>
+  <div class="mt-2 mb-2">
+    <span class="view-subtitle mat-h3">QR Code Label</span>
+    <button
+      mat-button
+      color="primary"
+      class="download-button"
+      (click)="getLabel()"
+    >
+      <mat-icon>file_download</mat-icon>Download
+    </button>
+  </div>
 
-    <mat-divider [inset]="true"></mat-divider>
-    <div class="edit-action-buttons mb-2">
-        <a class="add-item-button" [routerLink]="'/box/' + id + '/edit/'">Edit</a>
-    </div>
+  <mat-divider [inset]="true"></mat-divider>
+  <div class="edit-action-buttons mb-2">
+    <a class="add-item-button" [routerLink]="'/box/' + id + '/edit/'">Edit</a>
+  </div>
 
-    <h1>Items</h1>
-    <mat-form-field class="full-width">
-        <mat-label>Search For Item</mat-label>
-        <input matInput [formControl]="itemSearchControl">
-    </mat-form-field>
-    <table mat-table [dataSource]="dataSource" style="width: 100%;" aria-label="Items Table">
-            
-        <!-- Box Label Column -->
-        <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef> Name </th>
-            <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-        </ng-container>
+  <h1>Items</h1>
+  <mat-form-field class="full-width">
+    <mat-label>Search For Item</mat-label>
+    <input matInput [formControl]="itemSearchControl" />
+  </mat-form-field>
+  <table
+    mat-table
+    [dataSource]="dataSource"
+    style="width: 100%"
+    aria-label="Items Table"
+  >
+    <!-- Box Label Column -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+    </ng-container>
 
-        <!-- Actions Column -->
-        <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef aria-label="Delete Item"></th>
-            <td mat-cell class="actionColumn" *matCellDef="let element">
-                <button mat-icon-button aria-label="Example icon button with a vertical three dot icon" (click)="deleteItemClicked(element.id)">
-                    <mat-icon>delete_forever</mat-icon>
-                </button>
-            </td>
-        </ng-container>
-    
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-    <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" [length]="dataSource.dataCount" showFirstLastButtons></mat-paginator>
-    <div class="mt-sm mb-2">
-        <a class="add-item-button" [routerLink]="'/box/'+box?.id+'/item/0/edit'">+ Add New Item</a>
-    </div>
-    <mat-divider [inset]="true"></mat-divider>
-            <div class="mt-2">
-                <a routerLink="/boxes">
-                    <button mat-raised-button color="accent">Back</button>
-                </a>
-            </div>
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef aria-label="Delete Item"></th>
+      <td mat-cell class="actionColumn" *matCellDef="let element">
+        <button
+          mat-icon-button
+          aria-label="Example icon button with a vertical three dot icon"
+          (click)="deleteItemClicked(element.id)"
+        >
+          <mat-icon>delete_forever</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+  <mat-paginator
+    [pageSizeOptions]="[10, 25, 50, 100]"
+    [length]="dataSource.dataCount"
+    showFirstLastButtons
+  ></mat-paginator>
+  <div class="mt-sm mb-2">
+    <a class="add-item-button" [routerLink]="'/box/' + box?.id + '/item/0/edit'"
+      >+ Add New Item</a
+    >
+  </div>
+  <mat-divider [inset]="true"></mat-divider>
+  <div class="mt-2">
+    <a routerLink="/boxes">
+      <button mat-raised-button color="accent">Back</button>
+    </a>
+  </div>
 </mat-card>
