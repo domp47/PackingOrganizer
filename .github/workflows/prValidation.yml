@@ -29,10 +29,10 @@ jobs:
         with:
           node-version: 16.x
           cache: npm
-          cache-dependency-path: ui/package-lock.json
+          cache-dependency-path: src/ui/package-lock.json
 
       - name: Install Dependencies
-        working-directory: ui
+        working-directory: src/ui
         run: |
           npm ci
 
@@ -41,6 +41,6 @@ jobs:
           pre-commit run --all-files
 
       - name: Build Angular
-        working-directory: ui
+        working-directory: src/ui
         run: |
           npm run build
