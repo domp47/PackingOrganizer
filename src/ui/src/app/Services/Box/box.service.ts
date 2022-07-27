@@ -23,7 +23,7 @@ export class BoxService extends BaseService {
     if (pageSize != null) params = params.set('page_size', pageSize.toString());
     if (pageNumber != null)
       params = params.set('page_number', pageNumber.toString());
-    if (filter != null) params = params.set('filter', filter);
+    if (filter != null) params = params.set('search', filter);
 
     return this.http.get(`${this.url}`, { params: params }).pipe(
       map((data) => data),
@@ -70,7 +70,7 @@ export class BoxService extends BaseService {
     if (pageSize != null) params = params.set('page_size', pageSize.toString());
     if (pageNumber != null)
       params = params.set('page_number', pageNumber.toString());
-    if (filter != null) params = params.set('filter', filter);
+    if (filter != null) params = params.set('search', filter);
 
     return this.http.get(`${this.url}/${id}/items`, { params: params }).pipe(
       map((data) => data),

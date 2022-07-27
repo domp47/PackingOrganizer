@@ -8,7 +8,5 @@ configFilename = os.path.join(dir_path, "..", "config.ini")
 config = configparser.RawConfigParser()
 config.read(configFilename)
 
-dbString = config["DATABASE"]["ConnectionString"]
-dbParams = dict(entry.split("=") for entry in dbString.split(";"))
-
+dbFile = config["DATABASE"]["DbFile"]
 boxViewUrl = config["APP_SETTINGS"]["ViewBoxUrl"]

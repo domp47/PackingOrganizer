@@ -12,10 +12,10 @@ configFilename = os.path.join(dir_path, "config.ini")
 config = configparser.RawConfigParser()
 config.read(configFilename)
 
-dbString = config["DATABASE"]["ConnectionString"]
+dbString = config["DATABASE"]["DbFile"]
 
 if dbString is None:
-    raise ValueError("DATABASE/ConnectionString cannot be empty.")
+    raise ValueError("DATABASE/DbFile cannot be empty.")
 
 # Create the application instance
 app = connexion.App(__name__, specification_dir="./")

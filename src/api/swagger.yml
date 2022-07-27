@@ -30,7 +30,7 @@ paths:
           schema:
             type: integer
           required: false
-        - name: filter
+        - name: search
           description: The filter to search labels by
           in: query
           schema:
@@ -179,7 +179,7 @@ paths:
           schema:
             type: integer
           required: false
-        - name: search_filter
+        - name: search
           description: The filter to search labels by
           in: query
           schema:
