@@ -1,13 +1,12 @@
 CREATE TABLE box ( 
-	id                   SERIAL PRIMARY KEY,
+	id                   INTEGER PRIMARY KEY AUTOINCREMENT,
 	label                varchar(512) NOT NULL,
 	description          varchar(512) NOT NULL
 );
 
 CREATE TABLE item ( 
-	id                   SERIAL PRIMARY KEY,
+	id                   INTEGER PRIMARY KEY AUTOINCREMENT,
 	box_id               bigint NOT NULL,
-	name                 varchar(512) NOT NULL
+	name                 varchar(512) NOT NULL,
+	FOREIGN KEY(box_id) REFERENCES box(id)
 );
-
-ALTER TABLE "item" ADD FOREIGN KEY ("box_id") REFERENCES "box" ("id");

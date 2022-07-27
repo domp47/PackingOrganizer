@@ -1,5 +1,7 @@
-connexion==2.9.0
+connexion==2.14.0
+flask
 Flask-Cors==3.0.10
-Pillow==8.2.0
-qrcode==6.1
-matplotlib==3.4.3
+Pillow==9.2.0
+qrcode==7.3.1
+matplotlib==3.5.2
+numpy
